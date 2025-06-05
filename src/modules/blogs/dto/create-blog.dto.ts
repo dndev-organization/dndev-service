@@ -8,4 +8,6 @@ export class CreateBlogDto {
   content: string;
 
   author?: string;
+
+  isDeleted?: boolean;
 }
