@@ -3,6 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BlogsModule } from './modules/blogs/blogs.module';
 import { UsersModule } from './modules/users/users.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { SearchModule } from './modules/search/search.module';
 import configuration from '../config/configuration';
 
 @Module({
@@ -23,6 +25,8 @@ import configuration from '../config/configuration';
 
     BlogsModule,
     UsersModule,
+    CategoriesModule,
+    SearchModule,
   ],
 })
 export class AppModule {}
