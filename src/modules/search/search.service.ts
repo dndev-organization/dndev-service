@@ -1,26 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSearchDto } from './dto/create-search.dto';
-import { UpdateSearchDto } from './dto/update-search.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Blog } from '../../interfaces/blog.interface';
 
 @Injectable()
 export class SearchService {
-  create(createSearchDto: CreateSearchDto) {
-    return 'This action adds a new search';
-  }
+  constructor(@InjectModel('Blog') private blogModel: Model<Blog>) {}
 
-  findAll() {
-    return `This action returns all search`;
-  }
+  async searchBlogs(query: string, categoryId?: string): Promise<Blog[]> {
+    const searchPipeline: any[] = [
+      {
+        $match: {
+          $text: { $search: query }, 
+          isDeleted: false,
+        },
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categories',
+          foreignField: '_id',
+          as: 'categoryDetails',
+        },
+      },
+    ];
 
-  findOne(id: number) {
-    return `This action returns a #${id} search`;
-  }
+    if (categoryId) {
+      searchPipeline.push({
+        $match: {
+          categories: { $in: [categoryId] },
+        },
+      });
+    }
 
-  update(id: number, updateSearchDto: UpdateSearchDto) {
-    return `This action updates a #${id} search`;
-  }
+    searchPipeline.push(
+      {
+        $limit: 20,
+      },
+      {
+        $sort: {
+          score: { $meta: 'textScore' }, 
+        },
+      },
+    );
 
-  remove(id: number) {
-    return `This action removes a #${id} search`;
+    return this.blogModel.aggregate(searchPipeline).exec();
   }
 }
