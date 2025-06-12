@@ -1,26 +1,84 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSearchDto } from './dto/create-search.dto';
-import { UpdateSearchDto } from './dto/update-search.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Blog } from '../../interfaces/blog.interface';
 
 @Injectable()
 export class SearchService {
-  create(createSearchDto: CreateSearchDto) {
-    return 'This action adds a new search';
-  }
+  constructor(@InjectModel('Blog') private blogModel: Model<Blog>) {}
 
-  findAll() {
-    return `This action returns all search`;
-  }
+  async searchBlogs(
+    query: string,
+    categoryId?: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{
+    blogs: Blog[];
+    total: number;
+    totalPages: number;
+    currentPage: number;
+  }> {
+    try {
+      const skip = (page - 1) * limit; 
 
-  findOne(id: number) {
-    return `This action returns a #${id} search`;
-  }
+      const searchPipeline: any[] = [
+        {
+          $match: {
+            $text: { $search: query },
+            isDeleted: false,
+          },
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'categories',
+            foreignField: '_id',
+            as: 'categoryDetails',
+          },
+        },
+      ];
 
-  update(id: number, updateSearchDto: UpdateSearchDto) {
-    return `This action updates a #${id} search`;
-  }
+      if (categoryId) {
+        searchPipeline.push({
+          $match: {
+            categories: { $in: [categoryId] },
+          },
+        });
+      }
 
-  remove(id: number) {
-    return `This action removes a #${id} search`;
+      const countPipeline = [...searchPipeline, { $count: 'total' }];
+
+      searchPipeline.push(
+        {
+          $sort: {
+            score: { $meta: 'textScore' },
+          },
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: limit,
+        },
+      );
+
+      const [blogs, countResult] = await Promise.all([
+        this.blogModel.aggregate(searchPipeline).exec(),
+        this.blogModel.aggregate(countPipeline).exec(),
+      ]);
+
+      const total = countResult.length > 0 ? countResult[0].total : 0;
+      const totalPages = Math.ceil(total / limit);
+
+      return {
+        blogs,
+        total,
+        totalPages,
+        currentPage: page,
+      };
+    } catch (error) {
+      console.error('Search error:', error);
+      throw new Error('Failed to search blogs');
+    }
   }
 }

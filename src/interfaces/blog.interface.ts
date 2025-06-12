@@ -5,6 +5,7 @@ export interface Blog extends Document {
   title: string;
   content: string;
   author?: string;
+  view?: number;
   categories: (Types.ObjectId | Category)[];
   isDeleted?: boolean;
   createdAt: Date;
