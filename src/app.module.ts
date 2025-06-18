@@ -6,17 +6,19 @@ import { UsersModule } from './modules/users/users.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { SearchModule } from './modules/search/search.module';
 import configuration from '../config/configuration';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
-     ConfigModule.forRoot({
-       isGlobal: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
       load: [configuration],
-      envFilePath: [`.env.${process.env.NODE_ENV || 'local'}`],
+      // envFilePath: [`.env.${process.env.NODE_ENV || 'local'}`],
+      envFilePath: ['.env'],
     }),
 
-     MongooseModule.forRootAsync({
-      imports: [ConfigModule], 
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>('mongoUri'),
@@ -27,6 +29,7 @@ import configuration from '../config/configuration';
     UsersModule,
     CategoriesModule,
     SearchModule,
+    CommentModule,
   ],
 })
 export class AppModule {}
