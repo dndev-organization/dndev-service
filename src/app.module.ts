@@ -5,7 +5,8 @@ import { BlogsModule } from './modules/blogs/blogs.module';
 import { UsersModule } from './modules/users/users.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { SearchModule } from './modules/search/search.module';
-import configuration from '../config/configuration';
+import { AuthModule } from './modules/auth/auth.module';
+import configuration from './config/configuration';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import configuration from '../config/configuration';
     UsersModule,
     CategoriesModule,
     SearchModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

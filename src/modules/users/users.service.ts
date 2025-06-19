@@ -20,9 +20,9 @@ export class UsersService {
         return user;
     }
 
-    async create(createUserDto: CreateUserDto): Promise<User> {
-        const newUser = new this.userModel(createUserDto);
-        return newUser.save();
+    async create(userData: Partial<User>): Promise<User> {
+        const user = new this.userModel(userData);
+        return user.save();
     }
 
     async update(id: string, updateDto: UpdateUserDto): Promise<User> {
@@ -34,5 +34,17 @@ export class UsersService {
     async delete(id: string): Promise<void> {
         const result = await this.userModel.findByIdAndDelete(id);
         if (!result) throw new NotFoundException('User not found');
+    }
+
+    async findByEmail(email: string): Promise<User | null> {
+        return this.userModel.findOne({ email }).exec();
+    }
+
+    async saveRefreshToken(userId: string, refreshToken: string): Promise<void> {
+        await this.userModel.findByIdAndUpdate(userId, { refreshToken });
+    }
+
+    async findById(id: string): Promise<User | null> {
+        return this.userModel.findById(id).exec();
     }
 }
