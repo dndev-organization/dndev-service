@@ -7,6 +7,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/users.module'; 
 import { RolesGuard } from './roles.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JWTconstants } from '../../constants/jwt.constants';
 
 @Module({
   imports: [
@@ -16,8 +17,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '15m' },
+        secret: config.get<string>('JWT_SECRET') ?? 'defaultSecretKey',
+        signOptions: { expiresIn: JWTconstants.expiresIn },
       }),
     }),
     UsersModule,

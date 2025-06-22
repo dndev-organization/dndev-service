@@ -5,6 +5,7 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import { JWTconstants } from 'src/constants/jwt.constants';
 
 @Controller('/api/blogs')
 export class BlogsController {
@@ -20,21 +21,21 @@ export class BlogsController {
     return this.blogService.findOne(id);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard(JWTconstants.jwt), RolesGuard)
   @Roles(1)
   @Post('posts')
   create(@Body() dto: CreateBlogDto) {
     return this.blogService.create(dto);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard(JWTconstants.jwt), RolesGuard)
   @Roles(1)
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: UpdateBlogDto) {
     return this.blogService.update(id, dto);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard(JWTconstants.jwt), RolesGuard)
   @Roles(1)
   @Delete(':id')
   delete(@Param('id') id: string) {

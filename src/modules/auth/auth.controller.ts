@@ -3,6 +3,8 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { JWTconstants } from '../../constants/jwt.constants';
+import { MessageConsatnts } from '../../constants/message.constants';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -25,10 +27,10 @@ export class AuthController {
     return this.authService.refresh(token);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard(JWTconstants.jwt))
   @Post('logout')
   async logout(@Req() req) {
     await this.authService.logout(req.user.userId);
-    return { message: 'Logged out' };
+    return { message: MessageConsatnts.LOGOUT };
   }
 }

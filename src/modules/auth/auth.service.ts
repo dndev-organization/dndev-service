@@ -4,6 +4,8 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { User } from '../../interfaces/user.interface';
 import { RegisterDto } from './dto/register.dto';
+import { JWTconstants } from '../../constants/jwt.constants';
+import {MessageConsatnts} from '../../constants/message.constants';
 
 @Injectable()
 export class AuthService {
@@ -22,10 +24,10 @@ export class AuthService {
 
   async login(user: User) {
     const payload = { sub: user._id, email: user.email, role: user.role };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: JWTconstants.expiresIn });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: JWTconstants.expiresInRefresh });
 
-    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, JWTconstants.HASH_SALT_ROUNDS);
     await this.usersService.saveRefreshToken(user._id as string, hashedRefreshToken);
 
     return {
@@ -39,10 +41,10 @@ export class AuthService {
 
   const existingUser = await this.usersService.findByEmail(email);
   if (existingUser) {
-    throw new UnauthorizedException('Email already in use');
+    throw new UnauthorizedException(MessageConsatnts.EMAIL_ALREADY);
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, JWTconstants.HASH_SALT_ROUNDS);
   const newUser = await this.usersService.create({
     email,
     password: hashedPassword,
@@ -57,13 +59,13 @@ export class AuthService {
       const payload = this.jwtService.verify(refreshToken);
       const user = await this.usersService.findById(payload.sub);
 
-      if (!user || !user.refreshToken) {
-        throw new UnauthorizedException('Invalid refresh token');
+      if (!user?.refreshToken) {
+        throw new UnauthorizedException(MessageConsatnts.INVALID_REFRESH_TOKEN);
       }
 
       const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
       if (!isValid) {
-        throw new UnauthorizedException('Invalid refresh token');
+        throw new UnauthorizedException(MessageConsatnts.INVALID_REFRESH_TOKEN);
       }
 
       const newAccessToken = this.jwtService.sign(
@@ -72,14 +74,17 @@ export class AuthService {
           email: user.email,
           role: user.role,
         },
-        { expiresIn: '15m' },
+        { expiresIn: JWTconstants.expiresIn },
       );
 
       return {
         accessToken: newAccessToken,
       };
     } catch (error) {
-      throw new UnauthorizedException('Invalid refresh token');
+        if (error instanceof UnauthorizedException) {
+            throw error;
+        }
+        throw new UnauthorizedException(MessageConsatnts.INVALID_REFRESH_TOKEN);
     }
   }
 
