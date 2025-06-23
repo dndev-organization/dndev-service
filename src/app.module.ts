@@ -5,6 +5,7 @@ import { BlogsModule } from './modules/blogs/blogs.module';
 import { UsersModule } from './modules/users/users.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { SearchModule } from './modules/search/search.module';
+import { AuthModule } from './modules/auth/auth.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -12,7 +13,7 @@ import configuration from './config/configuration';
      ConfigModule.forRoot({
        isGlobal: true,
       load: [configuration],
-      envFilePath: [`.env.${process.env.NODE_ENV || 'local'}`],
+      envFilePath: [`.env.${process.env.NODE_ENV ?? 'local'}`],
     }),
 
      MongooseModule.forRootAsync({
@@ -27,6 +28,7 @@ import configuration from './config/configuration';
     UsersModule,
     CategoriesModule,
     SearchModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

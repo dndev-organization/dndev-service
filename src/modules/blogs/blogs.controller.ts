@@ -1,7 +1,11 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseInterceptors, UploadedFile, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseInterceptors, UploadedFile, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator, UseGuards } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { JWTconstants } from 'src/constants/jwt.constants';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('/api/blogs')
@@ -18,16 +22,22 @@ export class BlogsController {
     return this.blogService.findOne(id);
   }
 
-  @Post()
+  @UseGuards(AuthGuard(JWTconstants.jwt), RolesGuard)
+  @Roles(1)
+  @Post('posts')
   create(@Body() dto: CreateBlogDto) {
     return this.blogService.create(dto);
   }
 
+  @UseGuards(AuthGuard(JWTconstants.jwt), RolesGuard)
+  @Roles(1)
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: UpdateBlogDto) {
     return this.blogService.update(id, dto);
   }
 
+  @UseGuards(AuthGuard(JWTconstants.jwt), RolesGuard)
+  @Roles(1)
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.blogService.delete(id);
