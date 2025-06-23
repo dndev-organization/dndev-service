@@ -8,6 +8,7 @@ export const BlogSchema = new Schema({
    categories: [
       { type: Types.ObjectId, ref: 'Category' } 
     ],
+  image: String,
   isDeleted: { type: Boolean, default: false}
 }, {
   timestamps: true,

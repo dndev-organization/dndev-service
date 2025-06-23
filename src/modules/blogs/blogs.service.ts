@@ -15,7 +15,7 @@ export class BlogsService {
 
   async findOne(id: string): Promise<Blog> {
     const blog = await this.blogModel.findById(id).populate('categories').exec();
-    if (!blog) throw new NotFoundException('Blog not found');
+    if (!blog) throw new NotFoundException('Blog không được tìm thấy');
     return blog;
   }
 
@@ -26,12 +26,19 @@ export class BlogsService {
 
   async update(id: string, updateDto: UpdateBlogDto): Promise<Blog> {
     const updated = await this.blogModel.findByIdAndUpdate(id, updateDto, { new: true }).populate('categories').exec();
-    if (!updated) throw new NotFoundException('Blog not found');
+    if (!updated) throw new NotFoundException('Blog không được tìm thấy');
     return updated;
   }
 
   async delete(id: string): Promise<void> {
     const result = await this.blogModel.findByIdAndDelete(id);
-    if (!result) throw new NotFoundException('Blog not found');
+    if (!result) throw new NotFoundException('Blog không được tìm thấy');
+  }
+
+  async uploadImage(id: string, imagePath: string): Promise<Blog> {
+    const blog = await this.blogModel.findById(id);
+    if (!blog) throw new NotFoundException('Blog không được tìm thấy');
+    blog.image = imagePath; // Cập nhật đường dẫn hình ảnh
+    return blog.save();
   }
 }
