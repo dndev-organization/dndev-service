@@ -19,9 +19,9 @@ export class UsersService {
     return user;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const newUser = new this.userModel(createUserDto);
-    return newUser.save();
+  async create(userData: Partial<User>): Promise<User> {
+    const user = new this.userModel(userData);
+    return user.save();
   }
 
   async update(id: string, updateDto: UpdateUserDto): Promise<User> {
