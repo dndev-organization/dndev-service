@@ -5,7 +5,8 @@ import { BlogsModule } from './modules/blogs/blogs.module';
 import { UsersModule } from './modules/users/users.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { SearchModule } from './modules/search/search.module';
-import configuration from '../config/configuration';
+import { AuthModule } from './modules/auth/auth.module';
+import configuration from './config/configuration';
 import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
@@ -13,8 +14,7 @@ import { CommentModule } from './modules/comment/comment.module';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
-      // envFilePath: [`.env.${process.env.NODE_ENV || 'local'}`],
-      envFilePath: ['.env'],
+      envFilePath: [`.env.${process.env.NODE_ENV || 'local'}`],
     }),
 
     MongooseModule.forRootAsync({
@@ -30,6 +30,7 @@ import { CommentModule } from './modules/comment/comment.module';
     CategoriesModule,
     SearchModule,
     CommentModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

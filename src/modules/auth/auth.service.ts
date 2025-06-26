@@ -5,7 +5,7 @@ import { UsersService } from '../users/users.service';
 import { User } from '../../interfaces/user.interface';
 import { RegisterDto } from './dto/register.dto';
 import { JWTconstants } from '../../constants/jwt.constants';
-import {MessageConsatnts} from '../../constants/message.constants';
+import { MessageConsatnts } from '../../constants/message.constants';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +16,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.usersService.findByEmail(email);
-    if (user && await bcrypt.compare(password, user.password)) {
+    if (user && (await bcrypt.compare(password, user.password))) {
       return user;
     }
     return null;
@@ -24,35 +24,48 @@ export class AuthService {
 
   async login(user: User) {
     const payload = { sub: user._id, email: user.email, role: user.role };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: JWTconstants.expiresIn });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: JWTconstants.expiresInRefresh });
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: JWTconstants.expiresIn,
+    });
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: JWTconstants.expiresInRefresh,
+    });
 
-    const hashedRefreshToken = await bcrypt.hash(refreshToken, JWTconstants.HASH_SALT_ROUNDS);
-    await this.usersService.saveRefreshToken(user._id as string, hashedRefreshToken);
+    const hashedRefreshToken = await bcrypt.hash(
+      refreshToken,
+      JWTconstants.HASH_SALT_ROUNDS,
+    );
+    await this.usersService.saveRefreshToken(
+      user._id as string,
+      hashedRefreshToken,
+    );
 
     return {
       accessToken,
-      refreshToken, 
+      refreshToken,
     };
   }
 
   async register(dto: RegisterDto) {
-  const { email, password, role = 0 } = dto;
+    const { email, password, role = 0 } = dto;
 
-  const existingUser = await this.usersService.findByEmail(email);
-  if (existingUser) {
-    throw new UnauthorizedException(MessageConsatnts.EMAIL_ALREADY);
+    const existingUser = await this.usersService.findByEmail(email);
+    if (existingUser) {
+      throw new UnauthorizedException(MessageConsatnts.EMAIL_ALREADY);
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      password,
+      JWTconstants.HASH_SALT_ROUNDS,
+    );
+    const newUser = await this.usersService.create({
+      email,
+      password: hashedPassword,
+      role,
+    });
+
+    return this.login(newUser);
   }
-
-  const hashedPassword = await bcrypt.hash(password, JWTconstants.HASH_SALT_ROUNDS);
-  const newUser = await this.usersService.create({
-    email,
-    password: hashedPassword,
-    role,
-  });
-
-  return this.login(newUser); 
-}
 
   async refresh(refreshToken: string) {
     try {
@@ -81,10 +94,10 @@ export class AuthService {
         accessToken: newAccessToken,
       };
     } catch (error) {
-        if (error instanceof UnauthorizedException) {
-            throw error;
-        }
-        throw new UnauthorizedException(MessageConsatnts.INVALID_REFRESH_TOKEN);
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException(MessageConsatnts.INVALID_REFRESH_TOKEN);
     }
   }
 
