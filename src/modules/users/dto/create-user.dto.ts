@@ -1,12 +1,12 @@
 import { IsNotEmpty } from 'class-validator';
 
 export class CreateUserDto {
-    @IsNotEmpty()
-    email: string;
+  @IsNotEmpty()
+  email: string;
 
-    @IsNotEmpty()
-    password: string;
+  @IsNotEmpty()
+  password: string;
 
-    @IsNotEmpty()
-    role: number = 0;
+  @IsNotEmpty()
+  role: number = 0;
 }

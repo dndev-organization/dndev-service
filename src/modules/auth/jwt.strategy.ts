@@ -8,7 +8,8 @@ import { MessageConsatnts } from '../../constants/message.constants';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService) {
-    const jwtSecret = configService.get<string>('JWT_SECRET') ?? 'defaultSecretKey';
+    const jwtSecret =
+      configService.get<string>('JWT_SECRET') ?? 'defaultSecretKey';
     if (!jwtSecret) {
       throw new Error(MessageConsatnts.JWT_SECRET_NOT_DEFINED);
     }

@@ -10,11 +10,18 @@ export class BlogsService {
   constructor(@InjectModel('Blog') private readonly blogModel: Model<Blog>) {}
 
   async findAll(): Promise<Blog[]> {
-    return this.blogModel.find().sort({ createdAt: -1 }).populate('categories').exec();
+    return this.blogModel
+      .find()
+      .sort({ createdAt: -1 })
+      .populate('categories')
+      .exec();
   }
 
   async findOne(id: string): Promise<Blog> {
-    const blog = await this.blogModel.findById(id).populate('categories').exec();
+    const blog = await this.blogModel
+      .findById(id)
+      .populate('categories')
+      .exec();
     if (!blog) throw new NotFoundException('Blog not found');
     return blog;
   }
@@ -25,7 +32,10 @@ export class BlogsService {
   }
 
   async update(id: string, updateDto: UpdateBlogDto): Promise<Blog> {
-    const updated = await this.blogModel.findByIdAndUpdate(id, updateDto, { new: true }).populate('categories').exec();
+    const updated = await this.blogModel
+      .findByIdAndUpdate(id, updateDto, { new: true })
+      .populate('categories')
+      .exec();
     if (!updated) throw new NotFoundException('Blog not found');
     return updated;
   }
