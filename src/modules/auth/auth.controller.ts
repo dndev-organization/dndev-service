@@ -9,7 +9,7 @@ import {
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { VerifyOtpDto } from './dto/verify-otp.dto'; // ✅ thêm dòng này
+import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { JWTconstants } from '../../constants/jwt.constants';
 import { MessageConsatnts } from '../../constants/message.constants';
