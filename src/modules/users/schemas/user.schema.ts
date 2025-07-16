@@ -5,4 +5,6 @@ export const UserSchema = new Schema({
   password: { type: String, required: true },
   role: { type: Number, enum: [0, 1], default: 0 },
   refreshToken: { type: String, default: null },   
+  otp: { type: String }, 
+  otpExpiresAt: { type: Date }, 
 });

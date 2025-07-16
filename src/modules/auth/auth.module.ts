@@ -4,10 +4,11 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
-import { UsersModule } from '../users/users.module'; 
+import { UsersModule } from '../users/users.module';
 import { RolesGuard } from './roles.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JWTconstants } from '../../constants/jwt.constants';
+import { MailService } from '../../mail/mail.service';
 
 @Module({
   imports: [
@@ -24,7 +25,12 @@ import { JWTconstants } from '../../constants/jwt.constants';
     UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, RolesGuard],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    RolesGuard,
+    MailService,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}
