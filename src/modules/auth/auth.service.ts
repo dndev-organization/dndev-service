@@ -56,7 +56,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, JWTconstants.HASH_SALT_ROUNDS);
 
     const otp = this.generateOtp();
-    const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 phút
+    const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
     const newUser = await this.usersService.create({
       email,
