@@ -5,4 +5,7 @@ export interface User extends Document {
   password: string;
   role: number;
   refreshToken?: string;
+  otp?: string | null;
+  otpExpiresAt?: Date | null;
+  
 }
