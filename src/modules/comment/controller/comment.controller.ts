@@ -12,7 +12,7 @@ import { Comment } from '../schemas/comment.schemas';
 import { CreateCommentDto } from '../dto/createComment.dto';
 import { UpdateCommentDto } from '../dto/updateComment.dto';
 
-@Controller('comments')
+@Controller('/api/comments')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 

@@ -18,7 +18,7 @@ export class CommentService {
     return this.commentModel
       .find({ blog: blogId })
       .populate('blog')
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: 1 })
       .exec();
   }
 

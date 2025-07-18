@@ -2,15 +2,15 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../../interfaces/user.interface';
-// import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
+  readonly SORT_DESCENDING = -1;
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
   async findAll(): Promise<User[]> {
-    return this.userModel.find().sort({ createdAt: -1 });
+    return this.userModel.find().sort({ createdAt: this.SORT_DESCENDING });
   }
 
   async findOne(id: string): Promise<User> {
